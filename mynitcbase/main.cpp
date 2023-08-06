@@ -17,10 +17,7 @@ void printBuffer(unsigned char buffer[], int size)
 	std::cout << "\n";
 }
 
-int main(int argc, char *argv[])
-{
-	Disk disk_run;
-
+void printAttributeCatalog () {
 	// create objects for the relation catalog and attribute catalog
 	RecBuffer relCatBuffer(RELCAT_BLOCK);
 	RecBuffer attrCatBuffer(ATTRCAT_BLOCK);
@@ -34,9 +31,10 @@ int main(int argc, char *argv[])
 	relCatBuffer.getHeader(&relCatHeader);
 	attrCatBuffer.getHeader(&attrCatHeader);
 
-	// attrCatBaseSlot stores the base of the slot, 
-	// from which offset should be taken
-	for (int i = 0, attrCatBaseSlot = 0; i < relCatHeader.numEntries; i++)
+	// attrCatBaseSlot stores the index of current slot, 
+	// which is incremented everytime an attribute entry 
+	// is handled
+	for (int i = 0, attrCatSlotIndex = 0; i < relCatHeader.numEntries; i++)
 	{
 		// will store the record from the relation catalog
 		Attribute relCatRecord[RELCAT_NO_ATTRS]; 
@@ -45,11 +43,11 @@ int main(int argc, char *argv[])
 		printf("Relation: %s\n", relCatRecord[RELCAT_REL_NAME_INDEX].sVal);
 
 		int j = 0;
-		for (; j < relCatHeader.numAttrs; j++)
+		for (; j < relCatRecord[RELCAT_NO_ATTRIBUTES_INDEX].nVal; j++, attrCatSlotIndex++)
 		{
 			// declare attrCatRecord and load the attribute catalog entry into it
 			Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
-			attrCatBuffer.getRecord(attrCatRecord, attrCatBaseSlot + j);
+			attrCatBuffer.getRecord(attrCatRecord, attrCatSlotIndex);
 
 			// if the current attribute belongs to the current relation
 			// then we print it, which is checked by comparing names
@@ -60,11 +58,26 @@ int main(int argc, char *argv[])
 										   ? "NUM" : "STR";
 				printf("  %s: %s\n", attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, attrType);
 			}
+
+			// once all the slots are traversed, we update the block number
+			// of the attrCatBuffer to the next block, and then attrCatHeader
+			// is updated to the header of next block
+			if (attrCatSlotIndex == attrCatHeader.numSlots-1) {
+				attrCatSlotIndex = -1; // implementational operation, since the loop will increment anyways
+				attrCatBuffer = RecBuffer (attrCatHeader.rblock);
+				attrCatBuffer.getHeader(&attrCatHeader);
+			}
 		}
-		attrCatBaseSlot += j;
 
 		printf("\n");
 	}
+}
+
+int main(int argc, char *argv[])
+{
+	Disk disk_run;
+
+	printAttributeCatalog();
 
 	return 0;
 }
