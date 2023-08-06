@@ -73,10 +73,42 @@ void printAttributeCatalog () {
 	}
 }
 
+void updateRelationAttributeName (const char* relName, 
+									const char* oldAttrName, const char* newAttrName) {
+	RecBuffer attrCatBuffer (ATTRCAT_BLOCK);
+	
+	HeadInfo attrCatHeader;
+	attrCatBuffer.getHeader(&attrCatHeader);
+
+	for (int recIndex = 0; recIndex < attrCatHeader.numEntries; recIndex++) {
+		Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
+		attrCatBuffer.getRecord(attrCatRecord, recIndex);
+
+		if (strcmp(attrCatRecord[ATTRCAT_REL_NAME_INDEX].sVal, relName) == 0
+			&& strcmp(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, oldAttrName) == 0) 
+		{
+			strcpy(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, newAttrName);
+			attrCatBuffer.setRecord(attrCatRecord, recIndex);
+			std::cout << "Update successful!\n\n";
+			break;
+		}
+
+		if (recIndex == attrCatHeader.numSlots-1) {
+			recIndex = -1;
+			attrCatBuffer = RecBuffer (attrCatHeader.rblock);
+			attrCatBuffer.getHeader(&attrCatHeader);
+		}
+	}
+
+
+}
+
 int main(int argc, char *argv[])
 {
 	Disk disk_run;
 
+	printAttributeCatalog();
+	updateRelationAttributeName ("Students", "Class", "Batch");
 	printAttributeCatalog();
 
 	return 0;
