@@ -73,17 +73,22 @@ void printAttributeCatalog () {
 	}
 }
 
-void updateRelationAttributeName (const char* relName, 
+void updateAttributeName (const char* relName, 
 									const char* oldAttrName, const char* newAttrName) {
+	// used to hold reference to the block which referred to 
+	// for getting records, headers and updating them
 	RecBuffer attrCatBuffer (ATTRCAT_BLOCK);
 	
 	HeadInfo attrCatHeader;
 	attrCatBuffer.getHeader(&attrCatHeader);
 
+	// iterating the records in the Attribute Catalog
+	// to find the correct entry of relation and attribute
 	for (int recIndex = 0; recIndex < attrCatHeader.numEntries; recIndex++) {
 		Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
 		attrCatBuffer.getRecord(attrCatRecord, recIndex);
 
+		// matching the relation name, and attribute name
 		if (strcmp(attrCatRecord[ATTRCAT_REL_NAME_INDEX].sVal, relName) == 0
 			&& strcmp(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, oldAttrName) == 0) 
 		{
@@ -93,13 +98,14 @@ void updateRelationAttributeName (const char* relName,
 			break;
 		}
 
+		// reaching at the end of the block, and thus loading
+		// the next block and setting the attrCatHeader & recIndex
 		if (recIndex == attrCatHeader.numSlots-1) {
 			recIndex = -1;
 			attrCatBuffer = RecBuffer (attrCatHeader.rblock);
 			attrCatBuffer.getHeader(&attrCatHeader);
 		}
 	}
-
 
 }
 
@@ -108,7 +114,7 @@ int main(int argc, char *argv[])
 	Disk disk_run;
 
 	printAttributeCatalog();
-	updateRelationAttributeName ("Students", "Class", "Batch");
+	updateAttributeName ("Students", "Class", "Batch");
 	printAttributeCatalog();
 
 	return 0;
