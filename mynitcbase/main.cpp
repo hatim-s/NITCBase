@@ -19,7 +19,7 @@ void printBuffer(unsigned char buffer[], int size)
 
 void printAttributeCatalog () {
 	// create objects for the relation catalog and attribute catalog
-	RecBuffer relCatBuffer(RELCAT_BLOCK);
+	RecBuffer relCatBufferfer(RELCAT_BLOCK);
 	RecBuffer attrCatBuffer(ATTRCAT_BLOCK);
 
 	// creating headers for relation catalog and attribute catalog
@@ -28,7 +28,7 @@ void printAttributeCatalog () {
 
 	// load the headers of both the blocks into relCatHeader and attrCatHeader.
 	// (we will implement these functions later)
-	relCatBuffer.getHeader(&relCatHeader);
+	relCatBufferfer.getHeader(&relCatHeader);
 	attrCatBuffer.getHeader(&attrCatHeader);
 
 	// attrCatBaseSlot stores the index of current slot, 
@@ -38,7 +38,7 @@ void printAttributeCatalog () {
 	{
 		// will store the record from the relation catalog
 		Attribute relCatRecord[RELCAT_NO_ATTRS]; 
-		relCatBuffer.getRecord(relCatRecord, i);
+		relCatBufferfer.getRecord(relCatRecord, i);
 
 		printf("Relation: %s\n", relCatRecord[RELCAT_REL_NAME_INDEX].sVal);
 
@@ -112,10 +112,31 @@ void updateAttributeName (const char* relName,
 int main(int argc, char *argv[])
 {
 	Disk disk_run;
+	StaticBuffer bufferCache;
+	OpenRelTable cache;
 
-	printAttributeCatalog();
-	updateAttributeName ("Students", "Class", "Batch");
-	printAttributeCatalog();
+	// printAttributeCatalog();
+	// updateAttributeName ("Students", "Class", "Batch");
+	// printAttributeCatalog();
+
+	for (int relId = 0; relId <= 1; relId++) {
+		// i = 0 -> RELCAT_RELID
+		// i = 1 -> ATTRCAT_RELID
+
+		RelCatEntry relCatBuffer;
+		RelCacheTable::getRelCatEntry(relId, &relCatBuffer);
+
+		printf ("Relation: %s\n", relCatBuffer.relName);
+
+		for (int i = 0; i < relCatBuffer.numAttrs; i++) {
+			AttrCatEntry attrCatBuffer;
+			AttrCacheTable::getAttrCatEntry(relId, i, &attrCatBuffer);
+
+			const char *attrType = attrCatBuffer.attrType == NUMBER ? "NUM" : "STR";
+			printf ("    %s: %s\n", attrCatBuffer.attrName, attrType);
+		}
+		printf("\n");
+	}
 
 	return 0;
 }
