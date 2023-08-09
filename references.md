@@ -50,3 +50,12 @@ Attribute Catalog stores meta-information regarding all the attributes of each r
 4. `PrimaryFlag`
 5. `RootBlock`
 6. `Offset`
+
+# Caches
+Both **Relation Cache**  and **Attribute Cache** are arrays of size 12 (ie. `MAX_OPEN`).
+
+## Relation Cache
+An entry in the relation cache stores the **relation catalog entry**, the **record id (block# and slot#)** on the disk and some other *run-time data*.
+
+## Attribute Cache
+An entry in the attribute cache is a *linked list* where each node contains one of the **attribute catalog entry**, **record id** and some other *run-time meta data*.  
