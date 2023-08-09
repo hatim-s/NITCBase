@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <stdlib.h>
+#include <stdio.h>
 
 AttrCacheEntry* createAttrCacheEntryList (int size) {
     AttrCacheEntry *head = nullptr, *curr = nullptr;
@@ -35,7 +36,7 @@ OpenRelTable::OpenRelTable()
     Attribute relCatRecord [RELCAT_NO_ATTRS];
     RelCacheEntry *relCacheEntry = nullptr;
 
-    for (int relId = RELCAT_RELID; relId <= ATTRCAT_RELID; relId++) {
+    for (int relId = RELCAT_RELID; relId <= ATTRCAT_RELID+1; relId++) {
         relCatBlock.getRecord(relCatRecord, relId);
 
         relCacheEntry = (RelCacheEntry *) malloc (sizeof(RelCacheEntry));
@@ -56,7 +57,7 @@ OpenRelTable::OpenRelTable()
     Attribute attrCatRecord [ATTRCAT_NO_ATTRS];
     AttrCacheEntry *attrCacheEntry = nullptr, *head = nullptr;
 
-    for (int relId = RELCAT_RELID, recordId = 0; relId <= ATTRCAT_RELID; relId++) {
+    for (int relId = RELCAT_RELID, recordId = 0; relId <= ATTRCAT_RELID+1; relId++) {
         int numberOfAttributes = RelCacheTable::relCache[relId]->relCatEntry.numAttrs;
         head = createAttrCacheEntryList (numberOfAttributes);
         attrCacheEntry = head;
@@ -76,6 +77,34 @@ OpenRelTable::OpenRelTable()
 
         AttrCacheTable::attrCache[relId] = head;
     }
+
+    /*
+    RecBuffer relCatBuffer (RELCAT_BLOCK);
+    Attribute relCatRecord [RELCAT_NO_ATTRS];
+
+    HeadInfo relCatHeader;
+    relCatBuffer.getHeader(&relCatHeader);
+
+    int relationIndex = -1;
+    char* relationName = "Students";
+
+    for (int index = 2; index < relCatHeader.numEntries; index++) {
+        relCatBuffer.getRecord(relCatRecord, index);
+
+        if (strcmp(relCatRecord[RELCAT_REL_NAME_INDEX].sVal, 
+                relationName) == 0) { // matching the name of the record we want
+            relationIndex = index;
+        }
+    }
+
+    if (relationIndex == -1) {
+        printf("Relation \"%s\" does not exist!\n", relationName);
+        // return;
+    }
+    else {
+        
+    }
+    */
 }
 
 OpenRelTable::~OpenRelTable()

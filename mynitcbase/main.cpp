@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	// updateAttributeName ("Students", "Class", "Batch");
 	// printAttributeCatalog();
 
-	for (int relId = 0; relId <= 1; relId++) {
+	for (int relId = 0; relId <= 2; relId++) {
 		// i = 0 -> RELCAT_RELID
 		// i = 1 -> ATTRCAT_RELID
 
@@ -128,9 +128,9 @@ int main(int argc, char *argv[])
 
 		printf ("Relation: %s\n", relCatBuffer.relName);
 
-		for (int i = 0; i < relCatBuffer.numAttrs; i++) {
+		for (int attrIndex = 0; attrIndex < relCatBuffer.numAttrs; attrIndex++) {
 			AttrCatEntry attrCatBuffer;
-			AttrCacheTable::getAttrCatEntry(relId, i, &attrCatBuffer);
+			AttrCacheTable::getAttrCatEntry(relId, attrIndex, &attrCatBuffer);
 
 			const char *attrType = attrCatBuffer.attrType == NUMBER ? "NUM" : "STR";
 			printf ("    %s: %s\n", attrCatBuffer.attrName, attrType);
