@@ -6,6 +6,23 @@
 // local headers
 #include <iostream>
 
+/*
+void printBuffer(unsigned char buffer[], int size);
+void printAttributeCatalog ();
+void updateAttributeName (const char* relName, const char* oldAttrName, const char* newAttrName);
+*/
+
+int main(int argc, char *argv[])
+{
+	Disk disk_run;
+	StaticBuffer bufferCache;
+	OpenRelTable cache;
+
+	return FrontendInterface::handleFrontend(argc, argv);
+}
+
+// Helper function definitions:
+/*
 void printBuffer(unsigned char buffer[], int size)
 {
 	for (int i = 0; i < size; i++)
@@ -16,7 +33,9 @@ void printBuffer(unsigned char buffer[], int size)
 	}
 	std::cout << "\n";
 }
+*/
 
+/*
 void printAttributeCatalog () {
 	// create objects for the relation catalog and attribute catalog
 	RecBuffer relCatBufferfer(RELCAT_BLOCK);
@@ -72,7 +91,9 @@ void printAttributeCatalog () {
 		printf("\n");
 	}
 }
+*/
 
+/*
 void updateAttributeName (const char* relName, 
 									const char* oldAttrName, const char* newAttrName) {
 	// used to hold reference to the block which referred to 
@@ -108,35 +129,4 @@ void updateAttributeName (const char* relName,
 	}
 
 }
-
-int main(int argc, char *argv[])
-{
-	Disk disk_run;
-	StaticBuffer bufferCache;
-	OpenRelTable cache;
-
-	// printAttributeCatalog();
-	// updateAttributeName ("Students", "Class", "Batch");
-	// printAttributeCatalog();
-
-	for (int relId = 0; relId <= 2; relId++) {
-		// i = 0 -> RELCAT_RELID
-		// i = 1 -> ATTRCAT_RELID
-
-		RelCatEntry relCatBuffer;
-		RelCacheTable::getRelCatEntry(relId, &relCatBuffer);
-
-		printf ("Relation: %s\n", relCatBuffer.relName);
-
-		for (int attrIndex = 0; attrIndex < relCatBuffer.numAttrs; attrIndex++) {
-			AttrCatEntry attrCatBuffer;
-			AttrCacheTable::getAttrCatEntry(relId, attrIndex, &attrCatBuffer);
-
-			const char *attrType = attrCatBuffer.attrType == NUMBER ? "NUM" : "STR";
-			printf ("    %s: %s\n", attrCatBuffer.attrName, attrType);
-		}
-		printf("\n");
-	}
-
-	return 0;
-}
+*/
