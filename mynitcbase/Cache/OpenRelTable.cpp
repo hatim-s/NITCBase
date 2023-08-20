@@ -215,7 +215,6 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE])
 	// NOTE: make sure to allocate memory for the AttrCacheEntry using malloc()
 	// }
 
-	RecBuffer attrCatBlock(ATTRCAT_BLOCK);
 	Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
 
 	// let listHead be used to hold the head of the linked list of attrCache entries.
@@ -232,6 +231,7 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE])
 		// AttrCacheTable::resetSearchIndex(relId, attr);
 		RecId attrcatRecId = BlockAccess::linearSearch(ATTRCAT_RELID, RELCAT_ATTR_RELNAME, attrVal, EQ);
 
+		RecBuffer attrCatBlock(attrcatRecId.block);
 		attrCatBlock.getRecord(attrCatRecord, attrcatRecId.slot);
 
 		AttrCacheTable::recordToAttrCatEntry(

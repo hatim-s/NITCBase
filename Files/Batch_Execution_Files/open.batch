@@ -1,0 +1,15 @@
+open table x;
+open table a;
+open table b;
+open table c;
+open table d;
+open table e;
+open table f;
+open table g;
+open table h;
+open table i;
+open table j;
+open table k;
+close table k;
+close table j;
+open table k;
