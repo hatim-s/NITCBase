@@ -1,6 +1,7 @@
 #include "BlockBuffer.h"
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 
 // the declarations for these functions can be found in "BlockBuffer.h"
 
@@ -66,27 +67,43 @@ int RecBuffer::getRecord(union Attribute *record, int slotNum)
 //* load the record at slotNum into the argument pointer
 int RecBuffer::setRecord(union Attribute *record, int slotNum)
 {
-	// get the header using this.getHeader() function
-	HeadInfo head;
-	BlockBuffer::getHeader(&head);
-
-	int attrCount = head.numAttrs;
-	int slotCount = head.numSlots;
-
 	// read the block at this.blockNum into a buffer
 	unsigned char *buffer;
 	//// Disk::readBlock(buffer, this->blockNum);
 	int ret = loadBlockAndGetBufferPtr(&buffer);
 	if (ret != SUCCESS)
 		return ret;
+	
+	// get the header using this.getHeader() function
+	HeadInfo head;
+	BlockBuffer::getHeader(&head);
+
+	// get number of attributes in the block.
+	int attrCount = head.numAttrs;
+
+    // get the number of slots in the block.
+	int slotCount = head.numSlots;
+
+	//! if input slotNum is not in the permitted range 
+	if (slotNum >= slotCount) return E_OUTOFBOUND;
 
 	int recordSize = attrCount * ATTR_SIZE;
-	unsigned char *slotPointer = buffer + (32 + slotCount + (recordSize * slotNum)); // calculate buffer + offset
+	unsigned char *slotPointer = buffer + (HEADER_SIZE + slotCount + (recordSize * slotNum)); // calculate buffer + offset
 
 	// load the record into the rec data structure
 	memcpy(slotPointer, record, recordSize);
 
-	Disk::writeBlock(buffer, this->blockNum);
+	ret = StaticBuffer::setDirtyBit(this->blockNum);
+
+	//! The above function call should not fail since the block is already
+    //! in buffer and the blockNum is valid. If the call does fail, there
+    //! exists some other issue in the code) 
+	if (ret != SUCCESS) {
+		std::cout << "There is some error in the code!\n";
+		exit(1);
+	}
+
+	// // Disk::writeBlock(buffer, this->blockNum);
 
 	return SUCCESS;
 }
@@ -98,6 +115,19 @@ Used to load a block to the buffer and get a pointer to it.
 	? memory, thus it does not require the memory allocated
 */
 
+/* 
+	* NOTE: This function will NOT check if the block has been initialised as a
+   	* record or an index block. It will copy whatever content is there in that
+   	* disk block to the buffer.
+   	
+	* Also ensure that all the methods accessing and updating the block's data
+   	* should call the loadBlockAndGetBufferPtr() function before the access or
+   	* update is done. 
+	This is because the block might not be present in the
+   	buffer due to LRU buffer replacement. So, it will need to be bought back
+   	to the buffer before any operations can be done.
+ */
+
 int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr)
 {
 	// check whether the block is already present in the buffer
@@ -106,14 +136,23 @@ int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr)
 	if (bufferNum == E_OUTOFBOUND)
 		return E_OUTOFBOUND;
 
-	if (bufferNum == E_BLOCKNOTINBUFFER) // the block is not present in the buffer
+	// if present (!=E_BLOCKNOTINBUFFER),
+	// 		set the timestamp of the corresponding buffer to 0 and increment the
+	// 		timestamps of all other occupied buffers in BufferMetaInfo.
+	if (bufferNum != E_BLOCKNOTINBUFFER) {
+		for (int bufferIndex = 0; bufferIndex < BUFFER_CAPACITY; bufferIndex++) {
+			StaticBuffer::metainfo[bufferIndex].timeStamp++;
+		}
+		StaticBuffer::metainfo[bufferNum].timeStamp = 0;
+	}
+	else if (bufferNum == E_BLOCKNOTINBUFFER) // the block is not present in the buffer
 	{ 
 		bufferNum = StaticBuffer::getFreeBuffer(this->blockNum);
 
 		//! no free space found in the buffer (currently)
 		//! or some other error occurred in the process
 		if (bufferNum == E_OUTOFBOUND || bufferNum == FAILURE)
-			return FAILURE;
+			return bufferNum;
 
 		Disk::readBlock(StaticBuffer::blocks[bufferNum], this->blockNum);
 	}

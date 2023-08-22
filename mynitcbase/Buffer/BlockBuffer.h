@@ -101,4 +101,5 @@ public:
 	int setEntry(void *ptr, int indexNum);
 };
 
+void printBuffer (int blockNum, unsigned char block []);
 #endif // NITCBASE_BLOCKBUFFER_H
