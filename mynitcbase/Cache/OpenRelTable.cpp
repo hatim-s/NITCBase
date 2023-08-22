@@ -136,8 +136,8 @@ int OpenRelTable::getRelId(char relName[ATTR_SIZE])
 			&& tableMetaInfo[relId].free == false)
 			return relId;
 
-  	// if found return the relation id, else indicate that the relation do not
-  	// have an entry in the Open Relation Table.
+  	// if found return the relation id, else indicate that the relation 
+	// do not have an entry in the Open Relation Table.
 	return E_RELNOTOPEN;
 }
 
