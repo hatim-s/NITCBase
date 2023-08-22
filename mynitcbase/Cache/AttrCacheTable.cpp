@@ -4,16 +4,15 @@
 
 AttrCacheEntry *AttrCacheTable::attrCache[MAX_OPEN];
 
-/* returns the attrOffset-th attribute for the relation corresponding to relId
-NOTE: this function expects the caller to allocate memory for `*attrCatBuf`
-*/
+//* returns the attrOffset-th attribute for the relation corresponding to relId
+//* NOTE: this function expects the caller to allocate memory for `*attrCatBuf`
 int AttrCacheTable::getAttrCatEntry(int relId, int attrOffset, AttrCatEntry *attrCatBuf)
 {
-    // check if 0 <= relId < MAX_OPEN and return E_OUTOFBOUND otherwise
+    //! check if 0 <= relId < MAX_OPEN and return E_OUTOFBOUND otherwise
     if (relId < 0 || relId >= MAX_OPEN)
         return E_OUTOFBOUND;
 
-    // check if attrCache[relId] == nullptr and return E_RELNOTOPEN if true
+    //! check if attrCache[relId] == nullptr and return E_RELNOTOPEN if true
     if (attrCache[relId] == nullptr)
         return E_RELNOTOPEN;
 
@@ -22,7 +21,7 @@ int AttrCacheTable::getAttrCatEntry(int relId, int attrOffset, AttrCatEntry *att
     {
         if (entry->attrCatEntry.offset == attrOffset)
         {
-            // copy entry->attrCatEntry to *attrCatBuf and return SUCCESS;
+            // TODO: copy entry->attrCatEntry to *attrCatBuf and return SUCCESS;
             strcpy(attrCatBuf->relName, entry->attrCatEntry.relName);
             strcpy(attrCatBuf->attrName, entry->attrCatEntry.attrName);
 
@@ -35,33 +34,31 @@ int AttrCacheTable::getAttrCatEntry(int relId, int attrOffset, AttrCatEntry *att
         }
     }
 
-    // there is no attribute at this offset
+    //! there is no attribute at this offset
     return E_ATTRNOTEXIST;
 }
 
-/* returns the attribute with name `attrName` for the relation corresponding to relId
-NOTE: this function expects the caller to allocate memory for `*attrCatBuf`
-*/
+//* returns the attribute with name `attrName` for the relation corresponding to relId
+//* NOTE: this function expects the caller to allocate memory for `*attrCatBuf`
 int AttrCacheTable::getAttrCatEntry(int relId, char attrName[ATTR_SIZE], AttrCatEntry *attrCatBuf)
 {
 
-    // check that relId is valid and corresponds to an open relation
-    // check if 0 <= relId < MAX_OPEN and return E_OUTOFBOUND otherwise
+    // TODO: check that relId is valid and corresponds to an open relation
+    //! check if 0 <= relId < MAX_OPEN and return E_OUTOFBOUND otherwise
     if (relId < 0 || relId >= MAX_OPEN)
         return E_OUTOFBOUND;
 
-    // check if attrCache[relId] == nullptr and return E_RELNOTOPEN if true
+    //! check if attrCache[relId] == nullptr and return E_RELNOTOPEN if true
     if (attrCache[relId] == nullptr)
         return E_RELNOTOPEN;
 
-    // iterate over the entries in the attribute cache and set attrCatBuf to the entry that
-    // matches attrName
-    // traverse the linked list of attribute cache entries
+    // TODO: iterate over the entries in the attribute cache and set attrCatBuf to the entry that matches attrName
+    // TODO: traverse the linked list of attribute cache entries
     for (AttrCacheEntry *entry = attrCache[relId]; entry != nullptr; entry = entry->next)
     {
         if (strcmp(entry->attrCatEntry.attrName, attrName) == 0) // matching the name
         {
-            // copy entry->attrCatEntry to *attrCatBuf and return SUCCESS;
+            // TODO: copy entry->attrCatEntry to *attrCatBuf and return SUCCESS;
             strcpy(attrCatBuf->relName, entry->attrCatEntry.relName);
             strcpy(attrCatBuf->attrName, entry->attrCatEntry.attrName);
 
@@ -75,13 +72,14 @@ int AttrCacheTable::getAttrCatEntry(int relId, char attrName[ATTR_SIZE], AttrCat
     }
 
 
-    // no attribute with name attrName for the relation
+    //! no attribute with name attrName for the relation
     return E_ATTRNOTEXIST;
 }
 
-/* Converts a attribute catalog record to AttrCatEntry struct
-    We get the record as Attribute[] from the BlockBuffer.getRecord() function.
-    This function will convert that to a struct AttrCatEntry type.
+/*  
+    * Converts a attribute catalog record to AttrCatEntry struct
+    * We get the record as Attribute[] from the BlockBuffer.getRecord() function.
+    * This function will convert that to a struct AttrCatEntry type.
 */
 void AttrCacheTable::recordToAttrCatEntry(union Attribute record[ATTRCAT_NO_ATTRS],
                                           AttrCatEntry *attrCatEntry)

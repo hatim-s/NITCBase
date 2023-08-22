@@ -155,13 +155,12 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE])
 
   	// let relId be used to store the free slot.
 	relId = OpenRelTable::getFreeOpenRelTableEntry();
-
   	if (relId == E_CACHEFULL) return E_CACHEFULL;
 
   	/****** Setting up Relation Cache entry for the relation ******/
 
-  	// search for the entry with relation name, relName, 
-	// in the Relation Catalog using BlockAccess::linearSearch().
+  	// TODO: search for the entry with relation name, relName, 
+	// TODO: in the Relation Catalog using BlockAccess::linearSearch().
     //* Care should be taken to reset the searchIndex of the relation RELCAT_RELID
     //* before calling linearSearch().
 
@@ -198,13 +197,7 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE])
 
   	/****** Setting up Attribute Cache entry for the relation ******/
 
-	/*iterate over all the entries in the Attribute Catalog corresponding to each
-	attribute of the relation relName by multiple calls of BlockAccess::linearSearch()
-	care should be taken to reset the searchIndex of the relation, ATTRCAT_RELID,
-	corresponding to Attribute Catalog before the first call to linearSearch().*/
 	// {
-	// 	let attrcatRecId store a valid record id an entry of the relation, relName,
-	// 	in the Attribute Catalog.
 	// 	RecId attrcatRecId;
 
 	// 	read the record entry corresponding to attrcatRecId and create an
@@ -224,11 +217,16 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE])
 	head = createAttrCacheEntryList(numberOfAttributes);
 	attrCacheEntry = head;
 
+	// TODO: iterate over all the entries in the Attribute Catalog corresponding to each
+	// TODO: attribute of the relation relName by multiple calls of BlockAccess::linearSearch()
+	// * care should be taken to reset the searchIndex of the relation, ATTRCAT_RELID,
+	// * corresponding to Attribute Catalog before the first call to linearSearch().
+
 	RelCacheTable::resetSearchIndex(ATTRCAT_RELID);
-	// while (numberOfAttributes--)
-	for (int attr = 0; attr < numberOfAttributes; attr++)
+	while (numberOfAttributes--)
 	{
-		// AttrCacheTable::resetSearchIndex(relId, attr);
+		// // AttrCacheTable::resetSearchIndex(relId, attr);
+		// let attrcatRecId store a valid record id an entry of the relation, relName, in the Attribute Catalog.
 		RecId attrcatRecId = BlockAccess::linearSearch(ATTRCAT_RELID, RELCAT_ATTR_RELNAME, attrVal, EQ);
 
 		RecBuffer attrCatBlock(attrcatRecId.block);

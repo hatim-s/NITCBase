@@ -1,5 +1,4 @@
 #include "BlockBuffer.h"
-
 #include <cstdlib>
 #include <cstring>
 
@@ -11,22 +10,20 @@ BlockBuffer::BlockBuffer(int blockNum)
 	this->blockNum = blockNum;
 }
 
-// calls the parent class constructor
+//* calls the parent class constructor
 RecBuffer::RecBuffer(int blockNum) : BlockBuffer::BlockBuffer(blockNum) {}
 
-// load the block header into the argument pointer
+//* loads the block header into the argument pointer
 int BlockBuffer::getHeader(HeadInfo *head)
 {
-	// read the block at this.blockNum into the buffer
-	unsigned char *buffer;
-
 	// reading the buffer block from cache
-	// Disk::readBlock(buffer, this->blockNum);
+	// //Disk::readBlock(buffer, this->blockNum);
+	unsigned char *buffer;
 	int ret = loadBlockAndGetBufferPtr(&buffer);
 	if (ret != SUCCESS)
 		return ret;
 
-	// populate the numEntries, numAttrs and numSlots fields in *head
+	// TODO: populate the numEntries, numAttrs and numSlots fields in *head
 	memcpy(&head->pblock, buffer + 4, 4);
 	memcpy(&head->lblock, buffer + 8, 4);
 	memcpy(&head->rblock, buffer + 12, 4);
@@ -37,7 +34,7 @@ int BlockBuffer::getHeader(HeadInfo *head)
 	return SUCCESS;
 }
 
-// load the record at slotNum into the argument pointer
+//* loads the record at slotNum into the argument pointer
 int RecBuffer::getRecord(union Attribute *record, int slotNum)
 {
 	// get the header using this.getHeader() function
@@ -49,15 +46,14 @@ int RecBuffer::getRecord(union Attribute *record, int slotNum)
 
 	// read the block at this.blockNum into a buffer
 	unsigned char *buffer;
-	// Disk::readBlock(buffer, this->blockNum);
+	// // Disk::readBlock(buffer, this->blockNum);
 	int ret = loadBlockAndGetBufferPtr(&buffer);
 	if (ret != SUCCESS)
 		return ret;
 
-	/* record at slotNum will be at offset HEADER_SIZE + slotMapSize + (recordSize * slotNum)
-	   - each record will have size attrCount * ATTR_SIZE
-	   - slotMap will be of size slotCount
-	*/
+	//* record at slotNum will be at offset HEADER_SIZE + slotMapSize + (recordSize * slotNum)
+	//     each record will have size attrCount * ATTR_SIZE
+	//     slotMap will be of size slotCount
 	int recordSize = attrCount * ATTR_SIZE;
 	unsigned char *slotPointer = buffer + (32 + slotCount + (recordSize * slotNum)); // calculate buffer + offset
 
@@ -67,7 +63,7 @@ int RecBuffer::getRecord(union Attribute *record, int slotNum)
 	return SUCCESS;
 }
 
-// load the record at slotNum into the argument pointer
+//* load the record at slotNum into the argument pointer
 int RecBuffer::setRecord(union Attribute *record, int slotNum)
 {
 	// get the header using this.getHeader() function
@@ -79,15 +75,11 @@ int RecBuffer::setRecord(union Attribute *record, int slotNum)
 
 	// read the block at this.blockNum into a buffer
 	unsigned char *buffer;
-	// Disk::readBlock(buffer, this->blockNum);
+	//// Disk::readBlock(buffer, this->blockNum);
 	int ret = loadBlockAndGetBufferPtr(&buffer);
 	if (ret != SUCCESS)
 		return ret;
 
-	/* record at slotNum will be at offset HEADER_SIZE + slotMapSize + (recordSize * slotNum)
-	   - each record will have size attrCount * ATTR_SIZE
-	   - slotMap will be of size slotCount
-	*/
 	int recordSize = attrCount * ATTR_SIZE;
 	unsigned char *slotPointer = buffer + (32 + slotCount + (recordSize * slotNum)); // calculate buffer + offset
 
@@ -101,9 +93,9 @@ int RecBuffer::setRecord(union Attribute *record, int slotNum)
 
 /*
 Used to load a block to the buffer and get a pointer to it.
-NOTE: this function expects the caller to allocate memory for the argument (is this so?)
-	- in the function, it is simply pointing the buffer pointer to already alocated
-	memory, thus it does not require the memory allocated
+*NOTE: this function expects the caller to allocate memory for the argument (is this so?)
+	? in the function, it is simply pointing the buffer pointer to already alocated
+	? memory, thus it does not require the memory allocated
 */
 
 int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr)
@@ -114,12 +106,12 @@ int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr)
 	if (bufferNum == E_OUTOFBOUND)
 		return E_OUTOFBOUND;
 
-	if (bufferNum == E_BLOCKNOTINBUFFER)
-	{ // the block is not present in the buffer
+	if (bufferNum == E_BLOCKNOTINBUFFER) // the block is not present in the buffer
+	{ 
 		bufferNum = StaticBuffer::getFreeBuffer(this->blockNum);
 
-		// no free space found in the buffer (currently)
-		// or some other error occurred in the process
+		//! no free space found in the buffer (currently)
+		//! or some other error occurred in the process
 		if (bufferNum == E_OUTOFBOUND || bufferNum == FAILURE)
 			return FAILURE;
 
@@ -165,5 +157,4 @@ int compareAttrs(Attribute attr1, Attribute attr2, int attrType) {
 	return attrType == NUMBER ? 
 		(attr1.nVal < attr2.nVal ? -1 : (attr1.nVal > attr2.nVal ? 1 : 0)) : 
 		strcmp(attr1.sVal, attr2.sVal) ;
-	// // return attrType;
 }

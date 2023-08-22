@@ -15,17 +15,17 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 	// if the current search index record is invalid(i.e. both block and slot = -1)
 	if (prevRecId.block == -1 && prevRecId.slot == -1)
 	{
-		//* no hits from previous search; search should start from the
-		//* first record itself)
+		//* no hits from previous search; 
+		//* search should start from the first record itself
 
 		// get the first record block of the relation from the relation cache
 		// (use RelCacheTable::getRelCatEntry() function of Cache Layer)
-		RelCatEntry relCatEntry;
-		RelCacheTable::getRelCatEntry(relId, &relCatEntry);
+		RelCatEntry relCatBuffer;
+		RelCacheTable::getRelCatEntry(relId, &relCatBuffer);
 
 		// block = first block of the relation,
 		// slot = 0 (start at the first slot)
-		block = relCatEntry.firstBlk, slot = 0;
+		block = relCatBuffer.firstBlk, slot = 0;
 	}
 	else
 	{
@@ -39,8 +39,8 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 
 	/* The following code searches for the next record in the relation
 	   that satisfies the given condition:
-			* "We start from the record id (block, slot) and iterate over the remaining
-			* records of the relation"
+		* "We start from the record id (block, slot) and iterate over the remaining
+		* records of the relation"
 	*/
 
 	RelCatEntry relCatBuffer;
@@ -70,7 +70,6 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 		// (i.e. check if slot'th entry in slot map of block contains SLOT_UNOCCUPIED)
 		if (slotMap[slot] == SLOT_UNOCCUPIED)
 		{
-			// increment slot and continue to the next record slot
 			slot++;
 			continue;
 		}
@@ -79,26 +78,25 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 		Attribute record[blockHeader.numAttrs];
 		blockBuffer.getRecord(record, slot);
 
-		// compare record's attribute value to the the given attrVal as below:
-		/*
-			* firstly get the attribute offset for the attrName attribute
-			* from the attribute cache entry of the relation using
-			* AttrCacheTable::getAttrCatEntry()
-		*/
+		// TODO: compare record's attribute value to the the given attrVal as below:
+		//* firstly get the attribute offset for the attrName attribute
+		//* from the attribute cache entry of the relation using
+		//* AttrCacheTable::getAttrCatEntry()
+
 		AttrCatEntry attrCatBuffer;
 		AttrCacheTable::getAttrCatEntry(relId, attrName, &attrCatBuffer);
 
+		// use the attribute offset to get the value of the attribute from current record
 		int attrOffset = attrCatBuffer.offset;
-		/* use the attribute offset to get the value of the attribute from current record */
 
 		// will store the difference between the attributes 
 		// set cmpVal using compareAttrs()
 		int cmpVal = compareAttrs(record[attrOffset], attrVal, attrCatBuffer.attrType); 
 
-		/* Next task is to check whether this record satisfies the given condition.
-		   It is determined based on the output of previous comparison and
-		   the op value received.
-		   The following code sets the cond variable if the condition is satisfied.
+		/* 
+		TODO: check whether this record satisfies the given condition.
+		* It is determined based on the output of previous comparison and the op value received.
+		* The following code sets the cond variable if the condition is satisfied.
 		*/
 		if (
 			(op == NE && cmpVal != 0) || // if op is "not equal to"
@@ -109,11 +107,9 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 			(op == GE && cmpVal >= 0)	 // if op is "greater than or equal to"
 		)
 		{
-			/*
-			set the search index in the relation cache as
-			the record id of the record that satisfies the given condition
-			(use RelCacheTable::setSearchIndex function)
-			*/
+			// TODO: set the search index in the relation cache as
+			// TODO: the record id of the record that satisfies the given condition
+			// (use RelCacheTable::setSearchIndex function)
 			RecId newRecId = {block, slot};
 			RelCacheTable::setSearchIndex(relId, &newRecId);
 
@@ -123,6 +119,6 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 		slot++;
 	}
 
-	// no record in the relation with Id relid satisfies the given condition
+	//! no record in the relation with Id relid satisfies the given condition
 	return RecId{-1, -1};
 }

@@ -24,9 +24,9 @@ int StaticBuffer::getFreeBuffer(int blockNum) {
 
 	int allocatedBuffer = 0;
 
-	// iterate through all the blocks in the StaticBuffer
-	// find the first free block in the buffer (check metainfo)
-	// assign allocatedBuffer = index of the free block
+	// TODO: iterate through all the blocks in the StaticBuffer
+	// TODO: find the first free block in the buffer (check metainfo)
+	// TODO: assign allocatedBuffer = index of the free block
 	for (; allocatedBuffer < BUFFER_CAPACITY; allocatedBuffer++)
 		if (metainfo[allocatedBuffer].free) break;
 
@@ -38,9 +38,7 @@ int StaticBuffer::getFreeBuffer(int blockNum) {
 	return allocatedBuffer;
 }
 
-/* Get the buffer index where a particular block is stored
-   or E_BLOCKNOTINBUFFER otherwise
-*/
+//* Get the buffer index where a particular block is stored or E_BLOCKNOTINBUFFER otherwise
 int StaticBuffer::getBufferNum(int blockNum) {
 	// Check if blockNum is valid (between zero and DISK_BLOCKS)
 	// and return E_OUTOFBOUND if not valid.
@@ -49,9 +47,10 @@ int StaticBuffer::getBufferNum(int blockNum) {
 	// find and return the bufferIndex which corresponds to blockNum (check metainfo)
 	for (int bufferBlock = 0; bufferBlock < BUFFER_CAPACITY; bufferBlock++){
 		if (metainfo[bufferBlock].free == false 
-			&& metainfo[bufferBlock].blockNum == blockNum) return bufferBlock;
+			&& metainfo[bufferBlock].blockNum == blockNum) 
+			return bufferBlock;
 	}
 
-	// if block is not in the buffer
+	//! if block is not in the buffer
 	return E_BLOCKNOTINBUFFER;
 }
