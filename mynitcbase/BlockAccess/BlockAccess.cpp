@@ -166,13 +166,13 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
 	RecBuffer relCatBlock (RELCAT_BLOCK);
 	
 	Attribute relCatRecord [RELCAT_NO_ATTRS];
-	relCatBlock.getRecord(relCatRecord, RELCAT_SLOTNUM_FOR_RELCAT);
+	relCatBlock.getRecord(relCatRecord, searchIndex.slot);
 
     // TODO: update the relation name attribute in the record with newName.
 	strcpy(relCatRecord[RELCAT_REL_NAME_INDEX].sVal, newName);
 
     // TODO: set back the record value using RecBuffer.setRecord
-	relCatBlock.setRecord(relCatRecord, RELCAT_SLOTNUM_FOR_RELCAT);
+	relCatBlock.setRecord(relCatRecord, searchIndex.slot);
 
 	// TODO: update all the attribute catalog entries in the attribute catalog corresponding
 	// TODO: to the relation with relation name oldName to the relation name newName
@@ -194,14 +194,13 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
 		//    set back the record using RecBuffer.setRecord
 
 		strcpy(attrCatRecord[ATTRCAT_REL_NAME_INDEX].sVal, newName);
-		attrCatBlock.setRecord(relCatRecord, searchIndex.slot);
+		attrCatBlock.setRecord(attrCatRecord, searchIndex.slot);
 	}
 
     return SUCCESS;
 }
 
 int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE], char newName[ATTR_SIZE]) {
-
     // reset the searchIndex of the relation catalog using RelCacheTable::resetSearchIndex()
 	RelCacheTable::resetSearchIndex(RELCAT_RELID);
 
@@ -221,7 +220,7 @@ int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE
 
     // declare variable attrToRenameRecId used to store the attr-cat recId of the attribute to rename
     RecId attrToRenameRecId{-1, -1};
-    Attribute attrCatEntryRecord[ATTRCAT_NO_ATTRS];
+    // Attribute attrCatEntryRecord[ATTRCAT_NO_ATTRS];
 
     // TODO: iterate over all Attribute Catalog Entry record corresponding to the
     // TODO: relation to find the required attribute

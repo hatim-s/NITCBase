@@ -37,6 +37,9 @@ int Schema::renameRel(char oldRelName[ATTR_SIZE], char newRelName[ATTR_SIZE]) {
 	if (strcmp(oldRelName, RELCAT_RELNAME) == 0 || strcmp(oldRelName, ATTRCAT_RELNAME) == 0)
 		return E_NOTPERMITTED;
 
+	if (strcmp(newRelName, RELCAT_RELNAME) == 0 || strcmp(newRelName, ATTRCAT_RELNAME) == 0)
+		return E_NOTPERMITTED;
+
     //! if the relation is open
 	int relId = OpenRelTable::getRelId(oldRelName);
 	if (relId != E_RELNOTOPEN)

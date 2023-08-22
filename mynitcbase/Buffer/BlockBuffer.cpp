@@ -100,7 +100,7 @@ int RecBuffer::setRecord(union Attribute *record, int slotNum)
     //! exists some other issue in the code) 
 	if (ret != SUCCESS) {
 		std::cout << "There is some error in the code!\n";
-		return ret;
+		exit(1);
 	}
 
 	// // Disk::writeBlock(buffer, this->blockNum);

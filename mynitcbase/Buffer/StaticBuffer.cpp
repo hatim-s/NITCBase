@@ -15,17 +15,17 @@ StaticBuffer::StaticBuffer(){
 	}
 }
 
-// // write back all modified blocks on system exit
-// StaticBuffer::~StaticBuffer() {
-//   	// iterate through all the buffer blocks, write back blocks 
-// 	// with metainfo as free=false,dirty=true using Disk::writeBlock()
+// write back all modified blocks on system exit
+StaticBuffer::~StaticBuffer() {
+  	// iterate through all the buffer blocks, write back blocks 
+	// with metainfo as free=false,dirty=true using Disk::writeBlock()
 
-// 	for (int bufferIndex = 0; bufferIndex < BUFFER_CAPACITY; bufferIndex++) {
-// 		if (metainfo[bufferIndex].free == false 
-// 			&& metainfo[bufferIndex].dirty == true)
-// 			Disk::writeBlock(blocks[bufferIndex], metainfo[bufferIndex].blockNum);
-// 	}
-// }
+	for (int bufferIndex = 0; bufferIndex < BUFFER_CAPACITY; bufferIndex++) {
+		if (metainfo[bufferIndex].free == false 
+			&& metainfo[bufferIndex].dirty == true)
+			Disk::writeBlock(blocks[bufferIndex], metainfo[bufferIndex].blockNum);
+	}
+}
 
 
 /*
@@ -33,7 +33,7 @@ At this stage, we are not writing back from the buffer to the disk since we are
 not modifying the buffer. So, we will define an empty destructor for now. In
 subsequent stages, we will implement the write-back functionality here.
 */
-StaticBuffer::~StaticBuffer() {}
+// StaticBuffer::~StaticBuffer() {}
 
 int StaticBuffer::getFreeBuffer(int blockNum) {
 	if (blockNum < 0 || blockNum >= DISK_BLOCKS) return E_OUTOFBOUND;
@@ -63,13 +63,13 @@ int StaticBuffer::getFreeBuffer(int blockNum) {
 								metainfo[allocatedBuffer].blockNum);
 		}
 
-		metainfo[allocatedBuffer].free = false, 
-		metainfo[allocatedBuffer].dirty = false,
-		metainfo[allocatedBuffer].timeStamp = 0, 
-		metainfo[allocatedBuffer].blockNum = blockNum;
-
 		// return FAILURE;
 	}
+
+	metainfo[allocatedBuffer].free = false, 
+	metainfo[allocatedBuffer].dirty = false,
+	metainfo[allocatedBuffer].timeStamp = 0, 
+	metainfo[allocatedBuffer].blockNum = blockNum;
 
 	return allocatedBuffer;
 }
