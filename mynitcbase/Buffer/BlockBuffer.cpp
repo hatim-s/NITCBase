@@ -24,11 +24,11 @@ BlockBuffer::BlockBuffer(char blocktype){
 		return;
 	}
 
-	int bufferIndex = StaticBuffer::getFreeBuffer(blockNum);
-	if (bufferIndex < 0 || bufferIndex >= BUFFER_CAPACITY) {
-		std::cout << "Error: Buffer is not available\n";
-		return;
-	}
+	// // int bufferIndex = StaticBuffer::getFreeBuffer(blockNum);
+	// // if (bufferIndex < 0 || bufferIndex >= BUFFER_CAPACITY) {
+	// // 	std::cout << "Error: Buffer is not available\n";
+	// // 	return;
+	// // }
 		
     // set the blockNum field of the object to that of the allocated block
     // number if the method returned a valid block number,
