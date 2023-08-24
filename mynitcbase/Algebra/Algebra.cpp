@@ -135,7 +135,7 @@ inline bool isNumber(char *str)
 
 int Algebra::insert(char relName[ATTR_SIZE], int nAttrs, char record[][ATTR_SIZE]){
     // if relName is equal to "RELATIONCAT" or "ATTRIBUTECAT"
-    if (strcmp(relName, RELCAT_RELNAME) == 0)
+    if (strcmp(relName, RELCAT_RELNAME) == 0 || strcmp(relName, ATTRCAT_RELNAME) == 0)
     return E_NOTPERMITTED;
 
     // get the relation's rel-id using OpenRelTable::getRelId() method

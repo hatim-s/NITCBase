@@ -389,7 +389,7 @@ int BlockAccess::insert(int relId, Attribute *record) {
 			prevBlockHeader.rblock = blockNum;
             // number i.e. rec_id.block
             // (use BlockBuffer::setHeader() function)
-			blockBuffer.setHeader(&prevBlockHeader);
+			prevBlockBuffer.setHeader(&prevBlockHeader);
         }
         else
         {
