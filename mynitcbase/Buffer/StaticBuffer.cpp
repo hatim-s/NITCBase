@@ -13,6 +13,12 @@ void printBuffer (int bufferIndex, unsigned char buffer[]) {
 		printf ("%u ", buffer[i]);
 	}
 	printf ("\n");
+	printf ("\n");
+	for (int i = 0; i < BLOCK_SIZE; i++) {
+		if (i % 32 == 0) printf ("\n");
+		printf ("%c ", buffer[i]);
+	}
+	printf ("\n");
 }
 
 StaticBuffer::StaticBuffer(){
