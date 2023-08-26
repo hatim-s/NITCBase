@@ -1,6 +1,0 @@
-open table Events
-insert into Events values from events.csv
-select * from Events into null where id > 0
-close table Events
-select * from RELATIONCAT into null where RelName = Events
-exit
