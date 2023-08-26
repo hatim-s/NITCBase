@@ -370,6 +370,35 @@ int BlockBuffer::getFreeBlock(int blockType){
 	return blockNum;
 }
 
+void BlockBuffer::releaseBlock()
+{
+    // if blockNum is INVALID_BLOCK (-1), or it is invalidated already, do nothing
+	if (blockNum == INVALID_BLOCKNUM || 
+		StaticBuffer::blockAllocMap[blockNum] == UNUSED_BLK)
+		return;
+
+	/* get the buffer number of the buffer assigned to the block
+		using StaticBuffer::getBufferNum().
+		(this function return E_BLOCKNOTINBUFFER if the block is not
+		currently loaded in the buffer)
+	*/
+	int bufferIndex = StaticBuffer::getBufferNum(blockNum);
+
+	// if the block is present in the buffer, free the buffer
+	// by setting the free flag of its StaticBuffer::tableMetaInfo entry
+	// to true.
+	if (bufferIndex >= 0 && bufferIndex < BUFFER_CAPACITY)
+		StaticBuffer::metainfo[bufferIndex].free = true;
+
+	// free the block in disk by setting the data type of the entry
+	// corresponding to the block number in StaticBuffer::blockAllocMap
+	// to UNUSED_BLK.
+	StaticBuffer::blockAllocMap[blockNum] = UNUSED_BLK;
+
+	// set the object's blockNum to INVALID_BLOCK (-1)
+	this->blockNum = INVALID_BLOCKNUM;
+}
+
 int compareAttrs(Attribute attr1, Attribute attr2, int attrType) {
 	return attrType == NUMBER ? 
 		(attr1.nVal < attr2.nVal ? -1 : (attr1.nVal > attr2.nVal ? 1 : 0)) : 

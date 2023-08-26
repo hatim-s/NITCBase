@@ -3,15 +3,12 @@
 #include <cstring>
 #include <iostream>
 
-int Frontend::create_table(char relname[ATTR_SIZE], int no_attrs, char attributes[][ATTR_SIZE],
-                           int type_attrs[]) {
-  // Schema::createRel
-  return SUCCESS;
+int Frontend::create_table(char relname[ATTR_SIZE], int no_attrs, char attributes[][ATTR_SIZE], int type_attrs[]) {
+  return Schema::createRel(relname, no_attrs, attributes, type_attrs);
 }
 
 int Frontend::drop_table(char relname[ATTR_SIZE]) {
-  // Schema::deleteRel
-  return SUCCESS;
+  return Schema::deleteRel(relname);
 }
 
 int Frontend::open_table(char relname[ATTR_SIZE]) {
