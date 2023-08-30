@@ -107,3 +107,45 @@ void AttrCacheTable::attrCatEntryToRecord(AttrCatEntry *attrCatEntry, Attribute 
 
     // copy the rest of the fields in the record to the attrCacheEntry struct
 }
+
+int AttrCacheTable::setSearchIndex(int relId, char attrName[ATTR_SIZE], IndexId *searchIndex)
+{
+    if (relId < 0 || relId >= MAX_OPEN) return E_OUTOFBOUND;
+
+    AttrCacheEntry *curr = AttrCacheTable::attrCache[relId];
+    while (curr) {
+        if (strcmp(curr->attrCatEntry.attrName, attrName) == 0)
+        {
+            curr->searchIndex = *searchIndex;
+            return SUCCESS;
+        }
+        curr = curr->next;
+    }
+
+    return E_ATTRNOTEXIST;
+}
+
+int AttrCacheTable::resetSearchIndex(int relId, char attrName[ATTR_SIZE])
+{
+    // curr->searchIndex = RecId{-1, -1};
+    IndexId indexId = {-1, -1};
+    return AttrCacheTable::setSearchIndex(relId, attrName, &indexId);
+}
+
+int AttrCacheTable::getAttributeOffset(int relId, char attrName[ATTR_SIZE]) {
+    if (relId < 0 || relId >= MAX_OPEN) return E_RELNOTOPEN;
+
+    AttrCacheEntry *current = AttrCacheTable::attrCache[relId];
+    int attrOffset = 0;
+
+    while (current) {
+        if (strcmp (attrName, current->attrCatEntry.attrName) == 0)
+        {
+            return attrOffset;
+        }
+        current = current->next;
+        attrOffset++;
+    }
+
+    return E_ATTRNOTEXIST;
+}

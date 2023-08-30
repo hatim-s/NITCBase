@@ -1,0 +1,4 @@
+OPEN TABLE Toys;
+SELECT * FROM Toys INTO ToysForSale WHERE stock > ten;
+SELECT * FROM Toys INTO Toys WHERE stock > 10;
+SELECT id,name,size FROM Toys INTO ToySizes;

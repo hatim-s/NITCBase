@@ -1,8 +1,12 @@
-create table Stores(name STR);              # Error: Relation already exists
-create table People(name NUM, name STR);    # Error: Duplicate attributes found
-open table Products                         # Error: Relation does not exist
-open table Stores                           # Relation Stores opened successfully
-drop table Stores                           # Error: Relation is open
-drop table RELATIONCAT                      # Error: This operation is not permitted
-close table Stores                          # Relation Stores closed successfully
-drop table Stores                           # Relation Stores deleted successfully
+OPEN TABLE QuizMarks;
+SELECT rollNo, name, cgpa, location FROM QuizMarks into temp1 WHERE quizMarks > 85;
+OPEN TABLE temp1;
+SELECT rollNo, name, location FROM temp1 into temp2 WHERE cgpa > 8;
+CLOSE TABLE temp1;
+DROP TABLE temp1;
+OPEN TABLE temp2;
+SELECT rollNo, name FROM temp2 into GujaratList WHERE location = Gujarat;
+SELECT rollNo, name FROM temp2 into TelanganaList WHERE location = Telangana;
+SELECT rollNo, name FROM temp2 into KeralaList WHERE location = Kerala;
+CLOSE TABLE temp2;
+DROP TABLE temp2;
