@@ -1,0 +1,6 @@
+OPEN TABLE Toys;
+SELECT name,colour FROM Toys INTO ToyColours;
+SELECT * FROM Toys INTO ToysForSale WHERE stock > 3000;
+SELECT * FROM Toys INTO ToysToReorder WHERE stock <= 1000;
+SELECT * FROM Toys INTO ToysCopy;
+SELECT id,name FROM Toys INTO BlueToys WHERE colour = blue;

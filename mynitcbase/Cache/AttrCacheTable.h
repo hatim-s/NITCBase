@@ -40,6 +40,7 @@ public:
 	static int setSearchIndex(int relId, int attrOffset, IndexId *searchIndex);
 	static int resetSearchIndex(int relId, char attrName[ATTR_SIZE]);
 	static int resetSearchIndex(int relId, int attrOffset);
+	static int getAttributeOffset (int relId, char attrName [ATTR_SIZE]);
 
 private:
 	// field
