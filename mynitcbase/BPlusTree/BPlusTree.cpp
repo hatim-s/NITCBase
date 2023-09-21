@@ -80,10 +80,9 @@ RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE],
 
     /* 
     * This section is only needed when :
-        * search restarts from the root block (when searchIndex is reset by caller)
-        * root is not a leaf
-        * If there was a valid search index, then we are already at a leaf block
-        * and the test condition in the following loop will fail
+        * search starts from the root block and the root is not a leaf
+    * If there was a valid search index, then we are already at a leaf block
+    * and the test condition in the following loop will fail
     */
 
     while(StaticBuffer::getStaticBlockType(block) == IND_INTERNAL) /* block is of type IND_INTERNAL */ // use StaticBuffer::getStaticBlockType()
@@ -136,28 +135,24 @@ RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE],
              Hint: the helper function compareAttrs() can be used for comparing
             */
 
-            index = 0;
-            bool entryFound = false;
-            while (index < intHead.numEntries)
+            int entryindex = 0;
+            while (entryindex < intHead.numEntries)
             {
-                ret = internalBlk.getEntry(&intEntry, index);
+                ret = internalBlk.getEntry(&intEntry, entryindex);
                 
-                int cmpVal = compareAttrs(intEntry.attrVal, attrVal, NUMBER);
+                int cmpVal = compareAttrs(intEntry.attrVal, attrVal, attrCatEntry.attrType);
                 if (
-                    (op == EQ && cmpVal == 0) ||
+                    (op == EQ && cmpVal >= 0) ||
                     (op == GE && cmpVal >= 0) ||
                     (op == GT && cmpVal > 0)
                 )
-                {
-                    entryFound = true;
                     break;
-                }
 
-                index++;
+                entryindex++;
             }
 
             // if (/* such an entry is found*/) 
-            if (entryFound)
+            if (entryindex < intHead.numEntries)
             {
                 // move to the left child of that entry
                 block = intEntry.lChild; // left child of the entry
@@ -168,6 +163,8 @@ RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE],
                 // i.e numEntries - 1 th entry of the block
                 block = intEntry.rChild; // right child of last entry
             }
+
+            // index = 0;
         }
     }
 
@@ -195,7 +192,7 @@ RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE],
             leafBlk.getEntry(&leafEntry, index);
 
             // comparison between leafEntry's attribute value and input attrVal using compareAttrs()
-            int cmpVal = compareAttrs(leafEntry.attrVal, attrVal, NUMBER); 
+            int cmpVal = compareAttrs(leafEntry.attrVal, attrVal, attrCatEntry.attrType); 
 
             if (
                 (op == EQ && cmpVal == 0) ||

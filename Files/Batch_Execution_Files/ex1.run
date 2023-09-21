@@ -23,6 +23,7 @@ SELECT name FROM S11_Students INTO S11_c_temp WHERE name >= c;
 OPEN TABLE S11_c_temp;
 SELECT name FROM S11_c_temp INTO S11_c_Students WHERE name < d;
 CLOSE TABLE S11_c_temp;
+DROP TABLE S11_c_temp;
 echo -------------------------------------------------------
 echo ----Selecting all students with cgpa greater than 9----
 SELECT * FROM S11_Students INTO S11_9_Students WHERE cgpa >= 9;
