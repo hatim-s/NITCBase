@@ -1,4 +1,6 @@
-OPEN TABLE Toys;
-SELECT * FROM Toys INTO ToysForSale WHERE stock > ten;
-SELECT * FROM Toys INTO Toys WHERE stock > 10;
-SELECT id,name,size FROM Toys INTO ToySizes;
+CREATE TABLE EventRating(id NUM, title STR, rating NUM);
+OPEN TABLE Events;
+OPEN TABLE EventRating;
+SELECT * FROM Events JOIN EventRating INTO LocRating WHERE Events.id = EventRating.id;
+SELECT * FROM Events JOIN EventRating INTO LocRating WHERE Events.id = EventRating.name;
+SELECT * FROM Events JOIN EventRating INTO LocRating WHERE Events.id = EventRating.title;
