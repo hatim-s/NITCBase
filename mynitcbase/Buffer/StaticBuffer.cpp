@@ -21,6 +21,15 @@ void printBuffer (int bufferIndex, unsigned char buffer[]) {
 	printf ("\n");
 }
 
+void printBlockAllocMap (unsigned char blockAllocMap[]) {
+	for (int i = 0; i < DISK_BLOCKS; i++)
+	{
+		if (i % 32 == 0) printf("\n");
+		printf("%u ", blockAllocMap[i]);
+	}
+	printf("\n");
+}
+
 StaticBuffer::StaticBuffer(){
 	for (int blockIndex = 0, blockAllocMapSlot = 0; blockIndex < 4; blockIndex++) {
 		unsigned char buffer [BLOCK_SIZE];
