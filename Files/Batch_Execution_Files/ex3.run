@@ -1,12 +1,26 @@
-OPEN TABLE QuizMarks;
-SELECT rollNo, name, cgpa, location FROM QuizMarks into temp1 WHERE quizMarks > 85;
-OPEN TABLE temp1;
-SELECT rollNo, name, location FROM temp1 into temp2 WHERE cgpa > 8;
-CLOSE TABLE temp1;
-DROP TABLE temp1;
-OPEN TABLE temp2;
-SELECT rollNo, name FROM temp2 into GujaratList WHERE location = Gujarat;
-SELECT rollNo, name FROM temp2 into TelanganaList WHERE location = Telangana;
-SELECT rollNo, name FROM temp2 into KeralaList WHERE location = Kerala;
-CLOSE TABLE temp2;
-DROP TABLE temp2;
+echo ----Creating new relations----
+CREATE TABLE Organizers(name STR, eventId NUM);
+OPEN TABLE Organizers;
+INSERT INTO Organizers values from organizers.csv;
+OPEN TABLE Participants;
+OPEN TABLE Events;
+SELECT regNo, event, location, id FROM Participants JOIN Events INTO TempPart1 WHERE Participants.event = Events.title;
+OPEN TABLE TempPart1;
+SELECT regNo, eventId, event, location, name FROM Organizers JOIN TempPart1 INTO PartData WHERE Organizers.eventId = TempPart1.id;
+echo ----DROPPING TEMPORARY RELATIONS----
+CLOSE TABLE TempPart1;
+DROP TABLE TempPart1;
+echo ----Queston 3 Thomas part ------
+echo ----Creating new relations----
+SELECT eventId FROM Organizers INTO TomEventIds WHERE name = Thomas;
+OPEN TABLE TomEventIds;
+SELECT eventId, title FROM TomEventIds JOIN Events INTO ThomasEvents WHERE TomEventIds.eventId = Events.id;
+OPEN TABLE ThomasEvents;
+SELECT regNo, eventId, event FROM Participants JOIN ThomasEvents INTO ThomasParts WHERE Participants.event = ThomasEvents.title;
+ALTER TABLE RENAME ThomasParts COLUMN event TO eventName;
+echo ----DROPPING TEMPORARY RELATIONS----
+CLOSE TABLE TomEventIds;
+CLOSE TABLE ThomasEvents;
+DROP TABLE TomEventIds;
+DROP TABLE ThomasEvents;
+echo ---Done---

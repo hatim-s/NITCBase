@@ -1,31 +1,33 @@
-echo ----Creating and populating new relation----
-CREATE TABLE S11_Students(name STR, cgpa NUM);
-OPEN TABLE S11_Students;
-INSERT INTO S11_Students VAlUES FROM students.csv;
+echo ----Creating new relations----
+CREATE TABLE Events(id NUM, title STR, location STR);
+CREATE TABLE Locations(name STR, capacity NUM);
+CREATE TABLE Participants(regNo NUM, event STR);
+echo ----populating new relations----
+OPEN TABLE Events;
+INSERT INTO Events VALUES FROM events.csv;
+OPEN TABLE Locations;
+INSERT INTO Locations VALUES FROM locations.csv;
+OPEN TABLE Participants;
+INSERT INTO Participants VALUES FROM participants.csv;
 echo --------------------------------------------
-echo ----Creating an index on the student names----
-CREATE INDEX ON S11_Students.name;
-echo ----------------------------------------------
-echo ----Inserting records into the relation----
-INSERT INTO S11_Students VALUES(caaarter, 10);
-INSERT INTO S11_Students VALUES(caaara, 5);
-INSERT INTO S11_Students VALUES(caaapi, 8);
-echo -------------------------------------------
-echo ----Creating an index on the student CGPA----
-CREATE INDEX ON S11_Students.cgpa;
-echo ---------------------------------------------
-echo ----Inserting more records into the relation----
-INSERT INTO S11_Students VALUES(naveen, 9);
-INSERT INTO S11_Students VALUES(rohith, 9);
-echo ------------------------------------------------
-echo ----Selecting all students whose names begin with c----
-SELECT name FROM S11_Students INTO S11_c_temp WHERE name >= c;
-OPEN TABLE S11_c_temp;
-SELECT name FROM S11_c_temp INTO S11_c_Students WHERE name < d;
-CLOSE TABLE S11_c_temp;
-DROP TABLE S11_c_temp;
-echo -------------------------------------------------------
-echo ----Selecting all students with cgpa greater than 9----
-SELECT * FROM S11_Students INTO S11_9_Students WHERE cgpa >= 9;
-echo -------------------------------------------------------
-echo Done
+echo ----JOINING----
+SELECT name FROM Locations JOIN Events INTO EventLocations WHERE Locations.name = Events.location;
+SELECT regNo, event FROM Participants JOIN Events INTO AudiPeople WHERE Participants.event = Events.title;
+ALTER TABLE RENAME AudiPeople COLUMN event TO eventName;
+SELECT regNo, event, location FROM Participants JOIN Events INTO TempLocation WHERE Participants.event = Events.title;
+OPEN TABLE TempLocation;
+SELECT regNo, event, capacity FROM  Locations JOIN TempLocation INTO TempMiniEventP1 WHERE Locations.name = TempLocation.location;
+OPEN TABLE TempMiniEventP1;
+SELECT regNo, event, capacity FROM TempMiniEventP1 INTO TempMiniEventP2 WHERE capacity > 100;
+OPEN TABLE TempMiniEventP2;
+SELECT regNo, event FROM TempMiniEventP2 INTO MiniEventPeople WHERE capacity < 200;
+ALTER TABLE RENAME MiniEventPeople COLUMN event TO eventName;
+echo ----DROPPING TEMPORARY RELATIONS----
+CLOSE TABLE TempMiniEventP1;
+CLOSE TABLE TempLocation;
+CLOSE TABLE TempMiniEventP2;
+DROP TABLE TempMiniEventP1;
+DROP TABLE TempLocation;
+DROP TABLE TempMiniEventP2;
+echo     
+echo DONE -------------------------------
